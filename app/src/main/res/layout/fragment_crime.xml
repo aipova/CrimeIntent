@@ -6,7 +6,7 @@
               android:layout_height="match_parent">
 
     <TextView
-        style="@android:style/Widget.Material.TextView.ListSeparator"
+        style="?android:attr/listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/crime_title_label"/>
@@ -20,7 +20,7 @@
         android:hint="@string/crime_title_hint"/>
 
     <TextView
-        style="@android:style/Widget.Material.TextView.ListSeparator"
+        style="?android:attr/listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/crime_details_label"/>
