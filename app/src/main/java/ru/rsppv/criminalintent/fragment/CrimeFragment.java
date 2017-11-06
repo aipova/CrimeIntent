@@ -1,4 +1,4 @@
-package ru.rsppv.criminalintent;
+package ru.rsppv.criminalintent.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,11 +13,14 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import ru.rsppv.criminalintent.R;
+import ru.rsppv.criminalintent.model.CrimeLab;
+
 import static android.widget.CompoundButton.*;
 
 
 public class CrimeFragment extends Fragment {
-    private Crime mCrime;
+    private CrimeLab.Crime mCrime;
 
     private EditText mTitleField;
     private Button mDateButtom;
@@ -26,7 +29,7 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCrime = new Crime();
+        mCrime = new CrimeLab.Crime();
     }
 
     @Nullable

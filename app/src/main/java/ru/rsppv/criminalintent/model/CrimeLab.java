@@ -1,0 +1,85 @@
+package ru.rsppv.criminalintent.model;
+
+
+import android.content.Context;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+public class CrimeLab {
+    private static CrimeLab sCrimeLab;
+    private List<Crime> mCrimes;
+
+    public static CrimeLab get(Context context) {
+        if (sCrimeLab == null) {
+            sCrimeLab = new CrimeLab(context);
+        }
+        return sCrimeLab;
+    }
+
+    private  CrimeLab(Context context) {
+        mCrimes = new ArrayList<>();
+        for (int i=0; i < 100; i++) {
+            Crime crime = new Crime();
+            crime.setTitle("Crime #" + i);
+            crime.setSolved(i % 2 == 0);
+            mCrimes.add(crime);
+        }
+
+    }
+
+    public List<Crime> getCrimes() {
+        return mCrimes;
+    }
+
+    public Crime getCrime(UUID id) {
+        for (Crime crime : mCrimes) {
+            if (crime.getId().equals(id)) {
+                return crime;
+            }
+        }
+        return null;
+    }
+
+    public static class Crime {
+        private UUID mId;
+        private String mTitle;
+        private Date mDate;
+        private boolean mSolved;
+
+        public Crime() {
+            mId = UUID.randomUUID();
+            mDate = new Date();
+        }
+
+        public UUID getId() {
+            return mId;
+        }
+
+        public String getTitle() {
+            return mTitle;
+        }
+
+        public void setTitle(String title) {
+            mTitle = title;
+        }
+
+        public Date getDate() {
+            return mDate;
+        }
+
+        public void setDate(Date date) {
+            mDate = date;
+        }
+
+        public boolean isSolved() {
+            return mSolved;
+        }
+
+        public void setSolved(boolean solved) {
+            mSolved = solved;
+        }
+    }
+}
