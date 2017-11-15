@@ -14,13 +14,13 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import ru.rsppv.criminalintent.R;
-import ru.rsppv.criminalintent.model.CrimeLab;
+import ru.rsppv.criminalintent.model.Crime;
 
-import static android.widget.CompoundButton.*;
+import static android.widget.CompoundButton.OnCheckedChangeListener;
 
 
 public class CrimeFragment extends Fragment {
-    private CrimeLab.Crime mCrime;
+    private Crime mCrime;
 
     private EditText mTitleField;
     private Button mDateButtom;
@@ -29,7 +29,7 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCrime = new CrimeLab.Crime();
+        mCrime = new Crime();
     }
 
     @Nullable
