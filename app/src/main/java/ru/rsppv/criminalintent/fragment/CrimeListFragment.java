@@ -8,9 +8,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import ru.rsppv.criminalintent.R;
@@ -18,6 +20,7 @@ import ru.rsppv.criminalintent.model.Crime;
 import ru.rsppv.criminalintent.model.CrimeLab;
 
 public class CrimeListFragment extends Fragment {
+    public static final String DATE_PATTERN = "EEE, d MMM yyyy";
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
 
@@ -43,6 +46,7 @@ public class CrimeListFragment extends Fragment {
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mTitleTextView;
         private TextView mDateTextView;
+        private ImageView mCrimeSolvedImageView;
         private Crime mCrime;
 
         public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -51,12 +55,19 @@ public class CrimeListFragment extends Fragment {
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.crime_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.crime_date);
+            mCrimeSolvedImageView = (ImageView) itemView.findViewById(R.id.crime_solved);
         }
 
         private void bind(Crime crime) {
             mCrime = crime;
             mTitleTextView.setText(crime.getTitle());
-            mDateTextView.setText(crime.getDate().toString());
+            mDateTextView.setText(formatDate(crime));
+            mCrimeSolvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
+        }
+
+        private String formatDate(Crime crime) {
+            SimpleDateFormat format = new SimpleDateFormat(DATE_PATTERN);
+            return format.format(crime.getDate());
         }
 
         @Override
