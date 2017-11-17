@@ -1,5 +1,6 @@
 package ru.rsppv.criminalintent.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import ru.rsppv.criminalintent.CrimeActivity;
 import ru.rsppv.criminalintent.R;
@@ -21,7 +25,8 @@ import ru.rsppv.criminalintent.model.Crime;
 import ru.rsppv.criminalintent.model.CrimeLab;
 
 public class CrimeListFragment extends Fragment {
-    public static final String DATE_PATTERN = "EEE, d MMM yyyy";
+    private static final String DATE_PATTERN = "EEE, d MMM yyyy";
+    private static final int REQUEST_CRIME = 1;
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
 
@@ -38,20 +43,11 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateUI();
-    }
 
     private void updateUI() {
-        if (mAdapter == null) {
             CrimeLab crimeLab = CrimeLab.get(getActivity());
             mAdapter = new CrimeAdapter(crimeLab.getCrimes());
             mCrimeRecyclerView.setAdapter(mAdapter);
-        } else {
-            mAdapter.notifyDataSetChanged();
-        }
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -84,15 +80,24 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent intent = CrimeActivity.createIntent(getActivity(), mCrime.getId());
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_CRIME);
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CRIME && resultCode == Activity.RESULT_OK && data != null) {
+            UUID changedCrimeId = CrimeActivity.getChangedCrimeId(data);
+            mAdapter.notifyCrimeChanged(changedCrimeId);
+        }
+    }
+
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
         private List<Crime> mCrimes;
 
-        public CrimeAdapter(List<Crime> crimes) {
-            mCrimes = crimes;
+        public CrimeAdapter(Collection<Crime> crimes) {
+            mCrimes = new ArrayList<>(crimes);
         }
 
         @Override
@@ -104,6 +109,11 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onBindViewHolder(CrimeHolder holder, int position) {
             holder.bind(mCrimes.get(position));
+        }
+
+        public void notifyCrimeChanged(UUID crimeId) {
+            Crime crime = CrimeLab.get(getActivity()).getCrime(crimeId);
+            notifyItemChanged(mCrimes.indexOf(crime));
         }
 
         @Override

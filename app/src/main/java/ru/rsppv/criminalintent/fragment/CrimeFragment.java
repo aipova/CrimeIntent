@@ -1,5 +1,7 @@
 package ru.rsppv.criminalintent.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,7 +17,6 @@ import android.widget.EditText;
 
 import java.util.UUID;
 
-import ru.rsppv.criminalintent.CrimeActivity;
 import ru.rsppv.criminalintent.R;
 import ru.rsppv.criminalintent.model.Crime;
 import ru.rsppv.criminalintent.model.CrimeLab;
@@ -24,16 +25,29 @@ import static android.widget.CompoundButton.OnCheckedChangeListener;
 
 
 public class CrimeFragment extends Fragment {
+    public static final String ARG_CRIME_ID = "crime_id";
     private Crime mCrime;
 
     private EditText mTitleField;
     private Button mDateButtom;
     private CheckBox mSolvedCheckBox;
 
+    public static CrimeFragment newInstance(UUID crimeId) {
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_CRIME_ID, crimeId);
+        CrimeFragment fragment = new CrimeFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static UUID changedCrimeId(Intent result) {
+        return (UUID) result.getSerializableExtra(ARG_CRIME_ID);
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UUID crimeId = (UUID) getActivity().getIntent().getSerializableExtra(CrimeActivity.EXTRA_CRIME_ID);
+        UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
     }
 
@@ -51,7 +65,6 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mCrime.setTitle(s.toString());
-
             }
 
             @Override
@@ -72,7 +85,14 @@ public class CrimeFragment extends Fragment {
             }
         });
         mSolvedCheckBox.setChecked(mCrime.isSolved());
+        setResult();
 
         return view;
+    }
+
+    private void setResult() {
+        Intent result = new Intent();
+        result.putExtra(ARG_CRIME_ID, mCrime.getId());
+        getActivity().setResult(Activity.RESULT_OK, result);
     }
 }

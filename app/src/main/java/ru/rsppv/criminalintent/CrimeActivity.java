@@ -10,7 +10,7 @@ import ru.rsppv.criminalintent.fragment.CrimeFragment;
 
 public class CrimeActivity extends SingleFragmentActivity {
 
-    public static final String EXTRA_CRIME_ID = "u.rsppv.criminalintent.crime_id";
+    private static final String EXTRA_CRIME_ID = "ru.rsppv.criminalintent.crime_id";
 
     public static Intent createIntent(Context context, UUID crimeId) {
         Intent intent = new Intent(context, CrimeActivity.class);
@@ -18,8 +18,13 @@ public class CrimeActivity extends SingleFragmentActivity {
         return intent;
     }
 
+    public static UUID getChangedCrimeId(Intent result) {
+        return CrimeFragment.changedCrimeId(result);
+    }
+
     @Override
     protected Fragment createFragment() {
-        return new CrimeFragment();
+        UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
+        return CrimeFragment.newInstance(crimeId);
     }
 }
