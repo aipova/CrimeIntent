@@ -1,5 +1,6 @@
 package ru.rsppv.criminalintent.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,11 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import ru.rsppv.criminalintent.CrimeActivity;
 import ru.rsppv.criminalintent.R;
 import ru.rsppv.criminalintent.model.Crime;
 import ru.rsppv.criminalintent.model.CrimeLab;
@@ -37,10 +38,20 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
     private void updateUI() {
-        CrimeLab crimeLab = CrimeLab.get(getActivity());
-        mAdapter = new CrimeAdapter(crimeLab.getCrimes());
-        mCrimeRecyclerView.setAdapter(mAdapter);
+        if (mAdapter == null) {
+            CrimeLab crimeLab = CrimeLab.get(getActivity());
+            mAdapter = new CrimeAdapter(crimeLab.getCrimes());
+            mCrimeRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -72,7 +83,8 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getActivity(), mCrime.getTitle() + " clicked!", Toast.LENGTH_SHORT).show();
+            Intent intent = CrimeActivity.createIntent(getActivity(), mCrime.getId());
+            startActivity(intent);
         }
     }
 
