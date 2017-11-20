@@ -1,6 +1,5 @@
 package ru.rsppv.criminalintent.fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,14 +18,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import ru.rsppv.criminalintent.CrimeActivity;
+import ru.rsppv.criminalintent.CrimePagerActivity;
 import ru.rsppv.criminalintent.R;
 import ru.rsppv.criminalintent.model.Crime;
 import ru.rsppv.criminalintent.model.CrimeLab;
 
 public class CrimeListFragment extends Fragment {
     private static final String DATE_PATTERN = "EEE, d MMM yyyy";
-    private static final int REQUEST_CRIME = 1;
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
 
@@ -43,11 +41,20 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
 
     private void updateUI() {
+        if (mAdapter == null) {
             CrimeLab crimeLab = CrimeLab.get(getActivity());
             mAdapter = new CrimeAdapter(crimeLab.getCrimes());
             mCrimeRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -79,16 +86,8 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Intent intent = CrimeActivity.createIntent(getActivity(), mCrime.getId());
-            startActivityForResult(intent, REQUEST_CRIME);
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CRIME && resultCode == Activity.RESULT_OK && data != null) {
-            UUID changedCrimeId = CrimeActivity.getChangedCrimeId(data);
-            mAdapter.notifyCrimeChanged(changedCrimeId);
+            Intent intent = CrimePagerActivity.createIntent(getActivity(), mCrime.getId());
+            startActivity(intent);
         }
     }
 

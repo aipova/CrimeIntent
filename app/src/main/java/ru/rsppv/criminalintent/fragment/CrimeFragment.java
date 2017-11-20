@@ -1,7 +1,5 @@
 package ru.rsppv.criminalintent.fragment;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -38,10 +36,6 @@ public class CrimeFragment extends Fragment {
         CrimeFragment fragment = new CrimeFragment();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public static UUID changedCrimeId(Intent result) {
-        return (UUID) result.getSerializableExtra(ARG_CRIME_ID);
     }
 
     @Override
@@ -85,14 +79,7 @@ public class CrimeFragment extends Fragment {
             }
         });
         mSolvedCheckBox.setChecked(mCrime.isSolved());
-        setResult();
 
         return view;
-    }
-
-    private void setResult() {
-        Intent result = new Intent();
-        result.putExtra(ARG_CRIME_ID, mCrime.getId());
-        getActivity().setResult(Activity.RESULT_OK, result);
     }
 }
