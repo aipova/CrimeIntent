@@ -1,10 +1,13 @@
 package ru.rsppv.criminalintent.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
 
 public class Crime {
+    private static final String DATE_PATTERN = "EEE, d MMM yyyy";
+
     private UUID mId;
     private String mTitle;
     private Date mDate;
@@ -29,6 +32,11 @@ public class Crime {
 
     public Date getDate() {
         return mDate;
+    }
+
+    public String getDateString() {
+        SimpleDateFormat format = new SimpleDateFormat(DATE_PATTERN);
+        return format.format(mDate);
     }
 
     public void setDate(Date date) {

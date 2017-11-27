@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +23,6 @@ import ru.rsppv.criminalintent.model.Crime;
 import ru.rsppv.criminalintent.model.CrimeLab;
 
 public class CrimeListFragment extends Fragment {
-    private static final String DATE_PATTERN = "EEE, d MMM yyyy";
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
 
@@ -75,13 +73,8 @@ public class CrimeListFragment extends Fragment {
         private void bind(Crime crime) {
             mCrime = crime;
             mTitleTextView.setText(crime.getTitle());
-            mDateTextView.setText(formatDate(crime));
+            mDateTextView.setText(crime.getDateString());
             mCrimeSolvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
-        }
-
-        private String formatDate(Crime crime) {
-            SimpleDateFormat format = new SimpleDateFormat(DATE_PATTERN);
-            return format.format(crime.getDate());
         }
 
         @Override
