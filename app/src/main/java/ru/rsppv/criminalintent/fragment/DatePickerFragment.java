@@ -14,7 +14,6 @@ import android.widget.DatePicker;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import ru.rsppv.criminalintent.R;
 
@@ -37,8 +36,8 @@ public class DatePickerFragment extends DialogFragment {
         return datePickerFragment;
     }
 
-    public static Date getDate(Intent intent) {
-        return (Date) intent.getSerializableExtra(DATE_EXTRA);
+    public static Calendar getDate(Intent intent) {
+        return (Calendar) intent.getSerializableExtra(DATE_EXTRA);
     }
 
     @NonNull
@@ -53,12 +52,14 @@ public class DatePickerFragment extends DialogFragment {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Date date = getDate();
+                        Calendar date = getDate();
                         sendResult(Activity.RESULT_OK, date);
                     }
 
-                    private Date getDate() {
-                        return new GregorianCalendar(mDatePicker.getYear(), mDatePicker.getMonth(), mDatePicker.getDayOfMonth()).getTime();
+                    private Calendar getDate() {
+                        Calendar instance = Calendar.getInstance();
+                        instance.set(mDatePicker.getYear(), mDatePicker.getMonth(), mDatePicker.getDayOfMonth());
+                        return instance;
                     }
                 })
                 .create();
@@ -71,7 +72,7 @@ public class DatePickerFragment extends DialogFragment {
 
     }
 
-    private void sendResult(int result, Date resultDate) {
+    private void sendResult(int result, Calendar resultDate) {
         if (getTargetFragment() == null) {
             return;
         }

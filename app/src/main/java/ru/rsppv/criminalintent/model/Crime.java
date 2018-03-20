@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class Crime {
     private static final String DATE_PATTERN = "EEE, d MMM yyyy";
+    private static final String TIME_PATTERN = "HH:mm";
 
     private UUID mId;
     private String mTitle;
@@ -36,6 +37,11 @@ public class Crime {
 
     public String getDateString() {
         SimpleDateFormat format = new SimpleDateFormat(DATE_PATTERN);
+        return format.format(mDate);
+    }
+
+    public String getTimeString() {
+        SimpleDateFormat format = new SimpleDateFormat(TIME_PATTERN);
         return format.format(mDate);
     }
 
