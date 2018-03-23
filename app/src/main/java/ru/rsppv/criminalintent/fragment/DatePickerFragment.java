@@ -1,9 +1,7 @@
 package ru.rsppv.criminalintent.fragment;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -24,8 +22,11 @@ import static java.util.Calendar.YEAR;
 
 public class DatePickerFragment extends DialogFragment {
 
+    interface CrimeDateChangedListener {
+        void onCrimeDateChanged(Date newDate);
+    }
+
     private static final String CRIME_DATE = "crimeDate";
-    private static final String DATE_EXTRA = "ru.rsppv.criminalintent.fragment.datepickerfragment.date";
 
     private DatePicker mDatePicker;
 
@@ -35,10 +36,6 @@ public class DatePickerFragment extends DialogFragment {
         DatePickerFragment datePickerFragment = new DatePickerFragment();
         datePickerFragment.setArguments(args);
         return datePickerFragment;
-    }
-
-    public static Date getDate(Intent intent) {
-        return (Date) intent.getSerializableExtra(DATE_EXTRA);
     }
 
     @NonNull
@@ -53,8 +50,7 @@ public class DatePickerFragment extends DialogFragment {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Date date = getDate();
-                        sendResult(Activity.RESULT_OK, date);
+                        updateCrimeDate(getDate());
                     }
 
                     private Date getDate() {
@@ -71,12 +67,10 @@ public class DatePickerFragment extends DialogFragment {
 
     }
 
-    private void sendResult(int result, Date resultDate) {
-        if (getTargetFragment() == null) {
-            return;
+    private void updateCrimeDate(Date resultDate) {
+//        better to check type on attach and throw exception
+        if (getParentFragment() instanceof CrimeDateChangedListener) {
+            ((CrimeDateChangedListener)getParentFragment()).onCrimeDateChanged(resultDate);
         }
-        Intent intent = new Intent();
-        intent.putExtra(DATE_EXTRA, resultDate);
-        getTargetFragment().onActivityResult(getTargetRequestCode(), result, intent);
     }
 }

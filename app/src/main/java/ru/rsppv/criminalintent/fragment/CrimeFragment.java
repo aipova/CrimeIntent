@@ -1,7 +1,5 @@
 package ru.rsppv.criminalintent.fragment;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,10 +23,9 @@ import ru.rsppv.criminalintent.model.CrimeLab;
 import static android.widget.CompoundButton.OnCheckedChangeListener;
 
 
-public class CrimeFragment extends Fragment {
+public class CrimeFragment extends Fragment implements DatePickerFragment.CrimeDateChangedListener {
     public static final String ARG_CRIME_ID = "crime_id";
     public static final String DATE_DIALOG = "DateDialog";
-    private static final int REQUEST_DATE = 0;
     private Crime mCrime;
 
     private EditText mTitleField;
@@ -51,12 +48,9 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_DATE && resultCode == Activity.RESULT_OK && data != null) {
-            Date date = DatePickerFragment.getDate(data);
-            mCrime.setDate(date);
-            updateDate();
-        }
+    public void onCrimeDateChanged(Date newDate) {
+        mCrime.setDate(newDate);
+        updateDate();
     }
 
     private void updateDate() {
@@ -69,43 +63,47 @@ public class CrimeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_crime, container, false);
 
         mTitleField = (EditText) view.findViewById(R.id.crime_title);
-        mTitleField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mCrime.setTitle(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+        mTitleField.addTextChangedListener(crimeTitleTextWatcher);
         mTitleField.setText(mCrime.getTitle());
 
         mDateButton = (Button) view.findViewById(R.id.crime_date);
+        mDateButton.setOnClickListener(changeDateBtnClickListener);
         updateDate();
-        mDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
-                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
-                dialog.show(getFragmentManager(), DATE_DIALOG);
-
-            }
-        });
 
         mSolvedCheckBox = (CheckBox) view.findViewById(R.id.crime_solved);
-        mSolvedCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCrime.setSolved(isChecked);
-            }
-        });
+        mSolvedCheckBox.setOnCheckedChangeListener(crimeSolvedCheckBtnListener);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
 
         return view;
     }
+
+    private TextWatcher crimeTitleTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            mCrime.setTitle(s.toString());
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
+
+    private View.OnClickListener changeDateBtnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+            dialog.show(getChildFragmentManager(), DATE_DIALOG);
+        }
+    };
+
+    private OnCheckedChangeListener crimeSolvedCheckBtnListener = new OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            mCrime.setSolved(isChecked);
+        }
+    };
 }
