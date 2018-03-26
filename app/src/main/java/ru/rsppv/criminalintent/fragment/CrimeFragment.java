@@ -95,7 +95,7 @@ public class CrimeFragment extends Fragment implements DatePickerFragment.CrimeD
     private View.OnClickListener changeDateBtnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+            DatePickerFragment dialog = DatePickerFragment.Companion.newInstance(mCrime.getDate());
             dialog.show(getChildFragmentManager(), DATE_DIALOG);
         }
     };
