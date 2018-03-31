@@ -1,7 +1,7 @@
 package ru.rsppv.criminalintent.fragment
 
 import android.app.Dialog
-import android.content.DialogInterface
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
@@ -14,7 +14,7 @@ import java.util.Calendar.*
 
 class DatePickerFragment : DialogFragment() {
 
-    private var mDatePicker: DatePicker? = null
+    private lateinit var mDatePicker: DatePicker
 
     internal interface CrimeDateChangedListener {
         fun onCrimeDateChanged(newDate: Date)
@@ -23,27 +23,25 @@ class DatePickerFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val datePickerView = LayoutInflater.from(context).inflate(R.layout.dialog_date, null)
         mDatePicker = datePickerView.findViewById<View>(R.id.dialog_date_picker) as DatePicker
-        initDatePicker(mDatePicker, arguments.getSerializable(CRIME_DATE) as Date)
-        return AlertDialog.Builder(activity)
-                .setView(datePickerView)
-                .setTitle(R.string.date_picker_title)
-                .setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
-
-                    private val date: Date
-                        get() = GregorianCalendar(mDatePicker!!.year, mDatePicker!!.month, mDatePicker!!.dayOfMonth).time
-
-                    override fun onClick(dialog: DialogInterface, which: Int) {
-                        updateCrimeDate(date)
-                    }
-                })
-                .create()
+        initDatePicker(mDatePicker, getCrimeDateArg())
+        return AlertDialog.Builder(activity as Context)
+            .setView(datePickerView)
+            .setTitle(R.string.date_picker_title)
+            .setPositiveButton(android.R.string.ok) { dialog, whichBtn ->
+                updateCrimeDate(getDatePickerDate())
+            }
+            .create()
     }
 
-    private fun initDatePicker(datePicker: DatePicker?, crimeDate: Date) {
-        val calendar = Calendar.getInstance()
-        calendar.time = crimeDate
-        datePicker!!.init(calendar.get(YEAR), calendar.get(MONTH), calendar.get(DAY_OF_MONTH), null)
+    private fun getDatePickerDate(): Date {
+        return GregorianCalendar(mDatePicker.year, mDatePicker.month, mDatePicker.dayOfMonth).time
+    }
 
+    private fun getCrimeDateArg() = arguments?.getSerializable(CRIME_DATE) as Date
+
+    private fun initDatePicker(datePicker: DatePicker, crimeDate: Date) {
+        val calendar = Calendar.getInstance().apply { time = crimeDate }
+        datePicker.init(calendar.get(YEAR), calendar.get(MONTH), calendar.get(DAY_OF_MONTH), null)
     }
 
     private fun updateCrimeDate(resultDate: Date) {
@@ -55,14 +53,11 @@ class DatePickerFragment : DialogFragment() {
 
     companion object {
 
-        private val CRIME_DATE = "crimeDate"
+        const val CRIME_DATE = "crimeDate"
 
         fun newInstance(crimeDate: Date): DatePickerFragment {
-            val args = Bundle()
-            args.putSerializable(CRIME_DATE, crimeDate)
-            val datePickerFragment = DatePickerFragment()
-            datePickerFragment.arguments = args
-            return datePickerFragment
+            val bundle = Bundle().apply { putSerializable(CRIME_DATE, crimeDate) }
+            return DatePickerFragment().apply { arguments = bundle }
         }
     }
 }
