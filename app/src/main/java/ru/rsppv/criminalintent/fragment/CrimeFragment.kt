@@ -1,5 +1,6 @@
 package ru.rsppv.criminalintent.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
@@ -26,7 +27,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val crimeId = arguments!!.getSerializable(ARG_CRIME_ID) as UUID
-        mCrime = CrimeLab.get(activity).getCrime(crimeId)
+        mCrime = CrimeLab.getInstance(activity as Context).getCrime(crimeId)!!
     }
 
     override fun onCrimeDateChanged(newDate: Date) {
