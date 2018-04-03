@@ -26,13 +26,8 @@ class CrimeListFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.fragment_crime_list, menu)
-        menu?.findItem(R.id.show_subtitle)?.let {
-            if (mSubtitleVisible) {
-                it.setTitle(R.string.hide_subtitle)
-            } else {
-                it.setTitle(R.string.show_subtitle)
-            }
-        }
+        val subtitleItem = menu?.findItem(R.id.show_subtitle)
+        subtitleItem?.setTitle(if (mSubtitleVisible) R.string.hide_subtitle else R.string.show_subtitle)
 
     }
 
@@ -59,10 +54,13 @@ class CrimeListFragment : Fragment() {
         activity?.let {
             val crimeCount = CrimeLab.getInstance(it).allCrimes().size
             val subtitle =
-                if (mSubtitleVisible) getString(R.string.subtitle_format, crimeCount) else null
+                if (mSubtitleVisible) getSubtitle(crimeCount) else null
             (it as AppCompatActivity).supportActionBar?.subtitle = subtitle
         }
     }
+
+    private fun getSubtitle(crimeCount: Int) =
+        resources.getQuantityString(R.plurals.subtitle_plurals, crimeCount, crimeCount)
 
     private fun createNewCrime() {
         activity?.let {
