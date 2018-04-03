@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -22,13 +20,26 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
 
     private lateinit var mTitleField: EditText
     private lateinit var mDateButton: Button
-    private lateinit var mRemoveButton: Button
     private lateinit var mSolvedCheckBox: CheckBox
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.fragment_crime, menu)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val crimeId = arguments!!.getSerializable(ARG_CRIME_ID) as UUID
         mCrime = CrimeLab.getInstance(activity as Context).getCrime(crimeId)!!
+        setHasOptionsMenu(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
+        R.id.remove_crime -> {
+            removeCurrentCrime()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onCrimeDateChanged(newDate: Date) {
@@ -57,14 +68,6 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
             text = mCrime.dateString
         }
 
-        mRemoveButton = view.findViewById(R.id.remove_crime)
-        mRemoveButton.setOnClickListener {
-            activity?.let {
-                CrimeLab.getInstance(it).removeCrime(mCrime)
-                it.finish()
-            }
-        }
-
         mSolvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
         with(mSolvedCheckBox) {
             setOnCheckedChangeListener { buttonView, isChecked -> mCrime.isSolved = isChecked }
@@ -72,6 +75,13 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
         }
 
         return view
+    }
+
+    private fun removeCurrentCrime() {
+        activity?.let {
+            CrimeLab.getInstance(it).removeCrime(mCrime)
+            it.finish()
+        }
     }
 
     private val crimeTitleTextWatcher = object : TextWatcher {
