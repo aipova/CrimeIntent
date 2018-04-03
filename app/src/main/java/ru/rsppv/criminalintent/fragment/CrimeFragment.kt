@@ -22,6 +22,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
 
     private lateinit var mTitleField: EditText
     private lateinit var mDateButton: Button
+    private lateinit var mRemoveButton: Button
     private lateinit var mSolvedCheckBox: CheckBox
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,13 +43,13 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_crime, container, false)
 
-        mTitleField = view.findViewById<View>(R.id.crime_title) as EditText
+        mTitleField = view.findViewById(R.id.crime_title) as EditText
         with(mTitleField) {
             addTextChangedListener(crimeTitleTextWatcher)
             setText(mCrime.title)
         }
 
-        mDateButton = view.findViewById<View>(R.id.crime_date) as Button
+        mDateButton = view.findViewById(R.id.crime_date)
         with(mDateButton) {
             setOnClickListener {
                 DatePickerFragment.newInstance(mCrime.date).show(childFragmentManager, DATE_DIALOG)
@@ -56,7 +57,15 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
             text = mCrime.dateString
         }
 
-        mSolvedCheckBox = view.findViewById<View>(R.id.crime_solved) as CheckBox
+        mRemoveButton = view.findViewById(R.id.remove_crime)
+        mRemoveButton.setOnClickListener {
+            activity?.let {
+                CrimeLab.getInstance(it).removeCrime(mCrime)
+                it.finish()
+            }
+        }
+
+        mSolvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
         with(mSolvedCheckBox) {
             setOnCheckedChangeListener { buttonView, isChecked -> mCrime.isSolved = isChecked }
             isChecked = mCrime.isSolved

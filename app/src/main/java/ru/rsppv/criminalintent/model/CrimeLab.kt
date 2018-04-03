@@ -15,6 +15,8 @@ class CrimeLab private constructor(context: Context) {
 
     fun addCrime(crime: Crime) = mCrimes.add(crime)
 
+    fun removeCrime(crime: Crime) = mCrimes.remove(crime)
+
     companion object {
         private var INSTANCE: CrimeLab? = null
 
