@@ -15,6 +15,7 @@ import ru.rsppv.criminalintent.model.CrimeLab
 
 class CrimeListFragment : Fragment() {
     private lateinit var mCrimeRecyclerView: RecyclerView
+    private lateinit var mNoCrimesView: TextView
     private var mAdapter: CrimeAdapter? = null
     private var mSubtitleVisible = false
 
@@ -77,8 +78,10 @@ class CrimeListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_crime_list, container, false)
-        mCrimeRecyclerView = view.findViewById<View>(R.id.crime_recycler_view) as RecyclerView
+        mCrimeRecyclerView = view.findViewById(R.id.crime_recycler_view)
         mCrimeRecyclerView.layoutManager = LinearLayoutManager(activity)
+
+        mNoCrimesView = view.findViewById(R.id.no_crimes_text)
 
         savedInstanceState?.let {
             mSubtitleVisible = it.getBoolean(SAVED_SUBTITLE_VISIBLE)
@@ -96,10 +99,12 @@ class CrimeListFragment : Fragment() {
     private fun updateUI() {
         activity?.let {
             mAdapter?.notifyDataSetChanged()
+            val crimes = CrimeLab.getInstance(it).allCrimes()
             if (mAdapter == null) {
-                mAdapter = CrimeAdapter(CrimeLab.getInstance(it).allCrimes())
+                mAdapter = CrimeAdapter(crimes)
                 mCrimeRecyclerView.adapter = mAdapter
             }
+            mNoCrimesView.visibility = if (crimes.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 

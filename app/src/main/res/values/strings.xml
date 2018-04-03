@@ -13,4 +13,5 @@
         <item quantity="other">%1$d crimes</item>
     </plurals>
     <string name="remove_crime">Remove crime</string>
+    <string name="no_crimes_yet">There are no crimes yet</string>
 </resources>
