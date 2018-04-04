@@ -1,27 +1,86 @@
 package ru.rsppv.criminalintent.model
 
 
+import android.content.ContentValues
 import android.content.Context
+import ru.rsppv.criminalintent.database.CrimCursorWrapper
+import ru.rsppv.criminalintent.database.CrimeBaseHelper
+import ru.rsppv.criminalintent.database.CrimeDbSchema.CrimeTable
 import java.util.*
 
-class CrimeLab private constructor(context: Context) {
-    private val mCrimes: MutableList<Crime> = mutableListOf()
+class CrimeLab private constructor(context: Context?) {
+    private val mDatabase = CrimeBaseHelper(context).writableDatabase
 
-    fun allCrimes() = mCrimes
-
-    fun getCrime(id: UUID): Crime? {
-        return mCrimes.find { it.id == id }
+    fun getAllCrimes(): MutableList<Crime> {
+        val crimes = mutableListOf<Crime>()
+        queryCrimes(null, null).use { cursor ->
+            cursor.moveToFirst()
+            while (!cursor.isAfterLast) {
+                crimes.add(cursor.getCrime())
+                cursor.moveToNext()
+            }
+        }
+        return crimes
     }
 
-    fun addCrime(crime: Crime) = mCrimes.add(crime)
+    fun getCrime(id: UUID): Crime? {
+        queryCrimes("${CrimeTable.UUID} = ?", arrayOf(id.toString())).use { cursor ->
+            if (cursor.count > 0) {
+                cursor.moveToFirst()
+                return cursor.getCrime()
+            }
+            return null
+        }
+    }
 
-    fun removeCrime(crime: Crime) = mCrimes.remove(crime)
+    fun addCrime(crime: Crime) {
+        mDatabase.insert(CrimeTable.TABLE_NAME, null, getContentValues(crime))
+    }
+
+    fun updateCrime(crime: Crime) {
+        mDatabase.update(
+            CrimeTable.TABLE_NAME,
+            getContentValues(crime),
+            "${CrimeTable.UUID} = ?",
+            arrayOf(crime.id.toString())
+        )
+    }
+
+    fun removeCrime(crime: Crime) {
+        mDatabase.delete(
+            CrimeTable.TABLE_NAME,
+            "${CrimeTable.UUID} = ?",
+            arrayOf(crime.id.toString())
+        )
+    }
+
+    private fun queryCrimes(whereClause: String?, whereArgs: Array<String>?): CrimCursorWrapper {
+        val cursor = mDatabase.query(
+            CrimeTable.TABLE_NAME,
+            null,
+            whereClause,
+            whereArgs,
+            null,
+            null,
+            null
+        )
+        return CrimCursorWrapper(cursor)
+    }
+
+    private fun getContentValues(crime: Crime): ContentValues {
+        return ContentValues().apply {
+            put(CrimeTable.UUID, crime.id.toString())
+            put(CrimeTable.TITLE, crime.title)
+            put(CrimeTable.DATE, crime.date.time)
+            put(CrimeTable.SOLVED, if (crime.isSolved) 1 else 0)
+        }
+    }
 
     companion object {
         private var INSTANCE: CrimeLab? = null
 
-        fun getInstance(context: Context): CrimeLab =
-            INSTANCE ?: CrimeLab(context).also { INSTANCE = it }
+        fun getInstance(context: Context?): CrimeLab =
+            INSTANCE ?: CrimeLab(context?.applicationContext).also { INSTANCE = it }
 
     }
 }

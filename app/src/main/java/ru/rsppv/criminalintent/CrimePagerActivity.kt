@@ -23,7 +23,7 @@ class CrimePagerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_crime_pager)
 
-        mCrimes = CrimeLab.getInstance(this).allCrimes()
+        mCrimes = CrimeLab.getInstance(this).getAllCrimes()
 
         mViewPager = findViewById<View>(R.id.crime_view_pager) as ViewPager
         mViewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {

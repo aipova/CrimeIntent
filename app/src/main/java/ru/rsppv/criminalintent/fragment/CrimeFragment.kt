@@ -1,6 +1,5 @@
 package ru.rsppv.criminalintent.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
@@ -30,7 +29,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val crimeId = arguments!!.getSerializable(ARG_CRIME_ID) as UUID
-        mCrime = CrimeLab.getInstance(activity as Context).getCrime(crimeId)!!
+        mCrime = CrimeLab.getInstance(activity).getCrime(crimeId)!!
         setHasOptionsMenu(true)
     }
 
@@ -77,11 +76,16 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
         return view
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        CrimeLab.getInstance(activity).updateCrime(mCrime)
+    }
+
     private fun removeCurrentCrime() {
-        activity?.let {
-            CrimeLab.getInstance(it).removeCrime(mCrime)
-            it.finish()
-        }
+        CrimeLab.getInstance(activity).removeCrime(mCrime)
+        activity?.finish()
+
     }
 
     private val crimeTitleTextWatcher = object : TextWatcher {

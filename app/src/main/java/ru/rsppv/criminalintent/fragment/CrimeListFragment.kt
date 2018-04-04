@@ -52,12 +52,11 @@ class CrimeListFragment : Fragment() {
     }
 
     private fun updateSubtitle() {
-        activity?.let {
-            val crimeCount = CrimeLab.getInstance(it).allCrimes().size
-            val subtitle =
-                if (mSubtitleVisible) getSubtitle(crimeCount) else null
-            (it as AppCompatActivity).supportActionBar?.subtitle = subtitle
-        }
+        val crimeCount = CrimeLab.getInstance(activity).getAllCrimes().size
+        val subtitle =
+            if (mSubtitleVisible) getSubtitle(crimeCount) else null
+        (activity as AppCompatActivity).supportActionBar?.subtitle = subtitle
+
     }
 
     private fun getSubtitle(crimeCount: Int) =
@@ -97,15 +96,16 @@ class CrimeListFragment : Fragment() {
     }
 
     private fun updateUI() {
-        activity?.let {
+        val crimes = CrimeLab.getInstance(activity).getAllCrimes()
+        if (mAdapter == null) {
+            mAdapter = CrimeAdapter(crimes)
+            mCrimeRecyclerView.adapter = mAdapter
+        } else {
+            mAdapter?.updateCrimes(crimes)
             mAdapter?.notifyDataSetChanged()
-            val crimes = CrimeLab.getInstance(it).allCrimes()
-            if (mAdapter == null) {
-                mAdapter = CrimeAdapter(crimes)
-                mCrimeRecyclerView.adapter = mAdapter
-            }
-            mNoCrimesView.visibility = if (crimes.isEmpty()) View.VISIBLE else View.GONE
         }
+        mNoCrimesView.visibility = if (crimes.isEmpty()) View.VISIBLE else View.GONE
+
     }
 
     private inner class CrimeHolder(inflater: LayoutInflater, parent: ViewGroup) :
@@ -139,8 +139,12 @@ class CrimeListFragment : Fragment() {
     }
 
 
-    private inner class CrimeAdapter(val crimes: List<Crime>) :
+    private inner class CrimeAdapter(var crimes: List<Crime>) :
         RecyclerView.Adapter<CrimeHolder>() {
+
+        fun updateCrimes(crimeList: List<Crime>) {
+            crimes = crimeList
+        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
             return CrimeHolder(LayoutInflater.from(activity), parent)

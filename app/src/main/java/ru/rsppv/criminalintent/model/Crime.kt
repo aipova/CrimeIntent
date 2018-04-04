@@ -4,9 +4,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class Crime {
+class Crime(val id: UUID) {
 
-    val id: UUID = UUID.randomUUID()
+    constructor() : this(UUID.randomUUID())
+
     var title: String? = null
     var date: Date = Date()
     var isSolved: Boolean = false
