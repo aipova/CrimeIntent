@@ -3,8 +3,8 @@ package ru.rsppv.criminalintent.model
 
 import android.content.ContentValues
 import android.content.Context
-import ru.rsppv.criminalintent.database.CrimCursorWrapper
 import ru.rsppv.criminalintent.database.CrimeBaseHelper
+import ru.rsppv.criminalintent.database.CrimeCursorWrapper
 import ru.rsppv.criminalintent.database.CrimeDbSchema.CrimeTable
 import java.util.*
 
@@ -54,7 +54,7 @@ class CrimeLab private constructor(context: Context?) {
         )
     }
 
-    private fun queryCrimes(whereClause: String?, whereArgs: Array<String>?): CrimCursorWrapper {
+    private fun queryCrimes(whereClause: String?, whereArgs: Array<String>?): CrimeCursorWrapper {
         val cursor = mDatabase.query(
             CrimeTable.TABLE_NAME,
             null,
@@ -64,7 +64,7 @@ class CrimeLab private constructor(context: Context?) {
             null,
             null
         )
-        return CrimCursorWrapper(cursor)
+        return CrimeCursorWrapper(cursor)
     }
 
     private fun getContentValues(crime: Crime): ContentValues {
@@ -73,6 +73,7 @@ class CrimeLab private constructor(context: Context?) {
             put(CrimeTable.TITLE, crime.title)
             put(CrimeTable.DATE, crime.date.time)
             put(CrimeTable.SOLVED, if (crime.isSolved) 1 else 0)
+            put(CrimeTable.SUSPECT, crime.suspect)
         }
     }
 
