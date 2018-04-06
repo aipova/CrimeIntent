@@ -74,6 +74,7 @@ class CrimeLab private constructor(context: Context?) {
             put(CrimeTable.DATE, crime.date.time)
             put(CrimeTable.SOLVED, if (crime.isSolved) 1 else 0)
             put(CrimeTable.SUSPECT, crime.suspect)
+            put(CrimeTable.SUSPECT_PHONE, crime.suspectPhone)
         }
     }
 

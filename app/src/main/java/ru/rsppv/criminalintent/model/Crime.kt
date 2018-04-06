@@ -12,6 +12,7 @@ class Crime(val id: UUID) {
     var date: Date = Date()
     var isSolved: Boolean = false
     var suspect: String? = null
+    var suspectPhone: String? = null
 
     val dateString: String
         get() {

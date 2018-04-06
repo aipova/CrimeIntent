@@ -15,6 +15,7 @@ class CrimeCursorWrapper(cursor: Cursor?) : CursorWrapper(cursor) {
             date = Date(getLong(getColumnIndex(CrimeTable.DATE)))
             isSolved = getInt(getColumnIndex(CrimeTable.SOLVED)) != 0
             suspect = getString(getColumnIndex(CrimeTable.SUSPECT))
+            suspectPhone = getString(getColumnIndex(CrimeTable.SUSPECT_PHONE))
         }
     }
 }

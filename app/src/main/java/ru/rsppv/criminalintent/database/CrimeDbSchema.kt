@@ -10,5 +10,6 @@ object CrimeDbSchema {
         const val DATE = "date"
         const val SOLVED = "solved"
         const val SUSPECT = "suspect"
+        const val SUSPECT_PHONE = "suspect_phone"
     }
 }
