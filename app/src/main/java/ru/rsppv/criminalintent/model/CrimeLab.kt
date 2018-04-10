@@ -6,9 +6,10 @@ import android.content.Context
 import ru.rsppv.criminalintent.database.CrimeBaseHelper
 import ru.rsppv.criminalintent.database.CrimeCursorWrapper
 import ru.rsppv.criminalintent.database.CrimeDbSchema.CrimeTable
+import java.io.File
 import java.util.*
 
-class CrimeLab private constructor(context: Context?) {
+class CrimeLab private constructor(val context: Context?) {
     private val mDatabase = CrimeBaseHelper(context).writableDatabase
 
     fun getAllCrimes(): MutableList<Crime> {
@@ -32,6 +33,8 @@ class CrimeLab private constructor(context: Context?) {
             return null
         }
     }
+
+    fun getPhotoFile(crime: Crime) = File(context?.filesDir, crime.getPhotoFilename())
 
     fun addCrime(crime: Crime) {
         mDatabase.insert(CrimeTable.TABLE_NAME, null, getContentValues(crime))

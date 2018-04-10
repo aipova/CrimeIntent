@@ -19,6 +19,8 @@ class Crime(val id: UUID) {
             return format.format(date)
         }
 
+    fun getPhotoFilename() = "IMG_$id.jpg"
+
     companion object {
         private const val DATE_PATTERN = "EEE, d MMM yyyy"
     }
