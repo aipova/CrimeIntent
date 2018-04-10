@@ -115,6 +115,11 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
 
         mPhotoView = view.findViewById(R.id.crime_photo)
         updatePhotoView()
+        mPhotoView.setOnClickListener {
+            if (mPhotoFile != null) {
+                PhotoViewFragment.newInstance(mPhotoFile!!).show(childFragmentManager, PHOTO_DIALOG)
+            }
+        }
 
         return view
     }
@@ -239,6 +244,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
     companion object {
         const val ARG_CRIME_ID = "crime_id"
         const val DATE_DIALOG = "DateDialog"
+        const val PHOTO_DIALOG = "PhotoDialog"
         const val REPORT_DATE_FORMAT = "EEE, MMM dd"
         const val FILE_AUTHORITY = "ru.rsppv.criminalintent.fileprovider"
         const val REQUEST_CONTACT = 1
