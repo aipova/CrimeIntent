@@ -114,12 +114,18 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
         }
 
         mPhotoView = view.findViewById(R.id.crime_photo)
-        updatePhotoView()
         mPhotoView.setOnClickListener {
             if (mPhotoFile != null) {
                 PhotoViewFragment.newInstance(mPhotoFile!!).show(childFragmentManager, PHOTO_DIALOG)
             }
         }
+        mPhotoView.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                updatePhotoView(mPhotoView.width, mPhotoView.height)
+                mPhotoView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
 
         return view
     }
@@ -165,7 +171,10 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
                 updateSuspectName(data)
             }
             REQUEST_PHOTO -> {
-                activity?.revokeUriPermission(getPhotoFileUri(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                activity?.revokeUriPermission(
+                    getPhotoFileUri(),
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
                 updatePhotoView()
             }
         }
@@ -211,6 +220,18 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
         mPhotoFile?.let {
             if (it.exists()) {
                 val bitmap = PictureUtils.getScaledBitmap(it.path, activity!!)
+                mPhotoView.setImageBitmap(bitmap)
+
+            } else {
+                mPhotoView.setImageDrawable(null)
+            }
+        }
+    }
+
+    private fun updatePhotoView(width: Int, height: Int) {
+        mPhotoFile?.let {
+            if (it.exists()) {
+                val bitmap = PictureUtils.getScaledBitmap(it.path, width, height)
                 mPhotoView.setImageBitmap(bitmap)
 
             } else {
