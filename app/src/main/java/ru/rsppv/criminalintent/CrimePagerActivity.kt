@@ -14,7 +14,7 @@ import ru.rsppv.criminalintent.model.CrimeLab
 import java.util.*
 
 
-class CrimePagerActivity : AppCompatActivity() {
+class CrimePagerActivity : AppCompatActivity(), CrimeFragment.Callbacks {
 
     private lateinit var mViewPager: ViewPager
     private lateinit var mCrimes: List<Crime>
@@ -52,5 +52,13 @@ class CrimePagerActivity : AppCompatActivity() {
                 putExtra(EXTRA_CRIME_ID, crimeId)
             }
         }
+    }
+
+    override fun onCrimeUpdated() {
+        // behaviour isn't needed
+    }
+
+    override fun onCrimeRemoved() {
+        this.finish()
     }
 }

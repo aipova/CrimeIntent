@@ -1,6 +1,7 @@
 package ru.rsppv.criminalintent.fragment
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -27,7 +28,6 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
     private lateinit var mCrime: Crime
     private var mPhotoFile: File? = null
 
-
     private lateinit var mTitleField: EditText
     private lateinit var mDateButton: Button
     private lateinit var mReportButton: Button
@@ -36,6 +36,22 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
     private lateinit var mPhotoButton: ImageButton
     private lateinit var mPhotoView: ImageView
 
+    private var mCallbacks: Callbacks? = null
+
+    interface Callbacks {
+        fun onCrimeUpdated()
+        fun onCrimeRemoved()
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        mCallbacks = context as Callbacks
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mCallbacks = null
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -81,7 +97,10 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
 
         mSolvedCheckBox = view.findViewById(R.id.crime_solved)
         with(mSolvedCheckBox) {
-            setOnCheckedChangeListener { buttonView, isChecked -> mCrime.isSolved = isChecked }
+            setOnCheckedChangeListener { buttonView, isChecked ->
+                mCrime.isSolved = isChecked
+                updateCrime()
+            }
             isChecked = mCrime.isSolved
         }
 
@@ -169,6 +188,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
         when (requestCode) {
             REQUEST_CONTACT -> if (resultCode == Activity.RESULT_OK && data != null) {
                 updateSuspectName(data)
+                updateCrime()
             }
             REQUEST_PHOTO -> {
                 activity?.revokeUriPermission(
@@ -176,6 +196,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
                 updatePhotoView()
+                updateCrime()
             }
         }
 
@@ -198,6 +219,12 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
     override fun onCrimeDateChanged(newDate: Date) {
         mCrime.date = newDate
         mDateButton.text = mCrime.dateString
+        updateCrime()
+    }
+
+    fun updateCrime() {
+        CrimeLab.getInstance(activity).updateCrime(mCrime)
+        mCallbacks?.onCrimeUpdated()
     }
 
     private fun getCrimeReport(): String {
@@ -248,8 +275,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
 
     private fun removeCurrentCrime() {
         CrimeLab.getInstance(activity).removeCrime(mCrime)
-        activity?.finish()
-
+        mCallbacks?.onCrimeRemoved()
     }
 
     private val crimeTitleTextWatcher = object : TextWatcher {
@@ -257,6 +283,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             mCrime.title = s.toString()
+            updateCrime()
         }
 
         override fun afterTextChanged(s: Editable) {}

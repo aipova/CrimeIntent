@@ -1,5 +1,6 @@
 package ru.rsppv.criminalintent.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -8,7 +9,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
-import ru.rsppv.criminalintent.CrimePagerActivity
 import ru.rsppv.criminalintent.R
 import ru.rsppv.criminalintent.model.Crime
 import ru.rsppv.criminalintent.model.CrimeLab
@@ -18,6 +18,22 @@ class CrimeListFragment : Fragment() {
     private lateinit var mNoCrimesView: TextView
     private var mAdapter: CrimeAdapter? = null
     private var mSubtitleVisible = false
+    private var mCallbacks: Callbacks? = null
+
+    interface Callbacks {
+        fun onCrimeSelected(crime: Crime)
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        // should be well documented and possibly throw appropriate exception
+        mCallbacks = context as Callbacks
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mCallbacks = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +82,8 @@ class CrimeListFragment : Fragment() {
         activity?.let {
             val newCrime = Crime()
             CrimeLab.getInstance(it).addCrime(newCrime)
-            startActivity(CrimePagerActivity.createIntent(it, newCrime.id))
+            updateUI()
+            mCallbacks?.onCrimeSelected(newCrime)
         }
     }
 
@@ -95,7 +112,7 @@ class CrimeListFragment : Fragment() {
         updateSubtitle()
     }
 
-    private fun updateUI() {
+    fun updateUI() {
         val crimes = CrimeLab.getInstance(activity).getAllCrimes()
         if (mAdapter == null) {
             mAdapter = CrimeAdapter(crimes)
@@ -114,7 +131,7 @@ class CrimeListFragment : Fragment() {
         private val mTitleTextView: TextView
         private val mDateTextView: TextView
         private val mCrimeSolvedImageView: ImageView
-        private var mCrime: Crime? = null
+        private lateinit var mCrime: Crime
 
         init {
             itemView.setOnClickListener(this)
@@ -131,10 +148,7 @@ class CrimeListFragment : Fragment() {
         }
 
         override fun onClick(v: View) {
-            activity?.let {
-                val intent = CrimePagerActivity.createIntent(it, mCrime!!.id)
-                startActivity(intent)
-            }
+            mCallbacks?.onCrimeSelected(mCrime)
         }
     }
 
