@@ -41,12 +41,26 @@ class CrimeListActivity :
     }
 
     override fun onCrimeRemoved() {
-        val detailsFragment = supportFragmentManager.findFragmentById(R.id.detail_fragment_container)
+        val detailsFragment =
+            supportFragmentManager.findFragmentById(R.id.detail_fragment_container)
         if (detailsFragment != null) {
             supportFragmentManager.beginTransaction()
                 .remove(detailsFragment)
                 .commit()
             updateCrimeListUI()
         }
+    }
+
+    override fun onCrimeSwiped(crime: Crime) {
+        val detailsFragment =
+            supportFragmentManager.findFragmentById(R.id.detail_fragment_container)
+        if (detailsFragment is CrimeFragment) {
+            if (detailsFragment.getCrimeId() == crime.id) {
+                supportFragmentManager.beginTransaction()
+                    .remove(detailsFragment)
+                    .commit()
+            }
+        }
+
     }
 }

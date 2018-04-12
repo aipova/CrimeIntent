@@ -222,10 +222,12 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
         updateCrime()
     }
 
-    fun updateCrime() {
+    private fun updateCrime() {
         CrimeLab.getInstance(activity).updateCrime(mCrime)
         mCallbacks?.onCrimeUpdated()
     }
+
+    fun getCrimeId() = mCrime.id
 
     private fun getCrimeReport(): String {
         val solvedString = if (mCrime.isSolved) {

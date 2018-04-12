@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
@@ -22,6 +23,7 @@ class CrimeListFragment : Fragment() {
 
     interface Callbacks {
         fun onCrimeSelected(crime: Crime)
+        fun onCrimeSwiped(crime: Crime)
     }
 
     override fun onAttach(context: Context?) {
@@ -96,6 +98,7 @@ class CrimeListFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_crime_list, container, false)
         mCrimeRecyclerView = view.findViewById(R.id.crime_recycler_view)
         mCrimeRecyclerView.layoutManager = LinearLayoutManager(activity)
+        ItemTouchHelper(mRevoceOnSwipeHandler).attachToRecyclerView(mCrimeRecyclerView)
 
         mNoCrimesView = view.findViewById(R.id.no_crimes_text)
 
@@ -105,6 +108,23 @@ class CrimeListFragment : Fragment() {
 
         return view
     }
+
+    private val mRevoceOnSwipeHandler =
+        object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView?,
+                viewHolder: RecyclerView.ViewHolder?,
+                target: RecyclerView.ViewHolder?
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
+                viewHolder?.let {
+                    (mCrimeRecyclerView.adapter as CrimeAdapter).removeAt(it.adapterPosition)
+                }
+            }
+        }
 
     override fun onResume() {
         super.onResume()
@@ -153,11 +173,19 @@ class CrimeListFragment : Fragment() {
     }
 
 
-    private inner class CrimeAdapter(var crimes: List<Crime>) :
+    private inner class CrimeAdapter(var crimes: MutableList<Crime>) :
         RecyclerView.Adapter<CrimeHolder>() {
 
-        fun updateCrimes(crimeList: List<Crime>) {
+        fun updateCrimes(crimeList: MutableList<Crime>) {
             crimes = crimeList
+        }
+
+        fun removeAt(position: Int) {
+            val crime = crimes[position]
+            CrimeLab.getInstance(activity).removeCrime(crime)
+            crimes.removeAt(position)
+            mCallbacks?.onCrimeSwiped(crime)
+            notifyItemRemoved(position)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
