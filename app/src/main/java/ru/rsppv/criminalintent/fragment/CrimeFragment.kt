@@ -92,7 +92,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
             setOnClickListener {
                 DatePickerFragment.newInstance(mCrime.date).show(childFragmentManager, DATE_DIALOG)
             }
-            text = mCrime.dateString
+            text = mCrime.getDateString(activity)
         }
 
         mSolvedCheckBox = view.findViewById(R.id.crime_solved)
@@ -218,7 +218,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
 
     override fun onCrimeDateChanged(newDate: Date) {
         mCrime.date = newDate
-        mDateButton.text = mCrime.dateString
+        mDateButton.text = mCrime.getDateString(activity)
         updateCrime()
     }
 

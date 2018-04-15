@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Криминальная слежка</string>
+    <string name="crime_title_hint">Введите название нарушения</string>
+    <string name="crime_title_label">Название</string>
+    <string name="crime_details_label">Детали</string>
+    <string name="crime_solved_label">Дело закрыто</string>
+    <string name="date_picker_title">Дата преступления:</string>
+    <string name="new_crime">Новое нарушение</string>
+    <string name="show_subtitle">Показать заголовок</string>
+    <string name="hide_subtitle">Спрятать заголовок</string>
+    <plurals name="subtitle_plurals">
+        <item quantity="one">%1$d нарушение</item>
+        <item quantity="many">%1$d нарушений</item>
+        <item quantity="few">%1$d нарушения</item>
+        <item quantity="other">%1$d нарушений</item>
+    </plurals>
+    <string name="remove_crime">Удалить</string>
+    <string name="no_crimes_yet">Еще не совершено никаких нарушений</string>
+    <string name="crime_suspect_text">Выберите подозреваемого</string>
+    <string name="crime_report_text">Отправить отчет</string>
+    <string name="crime_report">%1$s!
+    Нарушение было совершено %2$s. %3$s, и %4$s
+    </string>
+    <string name="crime_report_solved">Дело закрыто</string>
+    <string name="crime_report_unsolved">Дело еще не закрыто</string>
+    <string name="crime_report_no_suspect">подозреваемого нет.</string>
+    <string name="crime_report_suspect">подозреваемый это %s.</string>
+    <string name="crime_report_subject">Отчет от Криминальной слежки</string>
+    <string name="send_report">Послать отчет о нарушении через</string>
+</resources>

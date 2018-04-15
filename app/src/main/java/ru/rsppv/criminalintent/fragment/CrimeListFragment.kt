@@ -163,7 +163,7 @@ class CrimeListFragment : Fragment() {
         fun bind(crime: Crime) {
             mCrime = crime
             mTitleTextView.text = crime.title
-            mDateTextView.text = crime.dateString
+            mDateTextView.text = crime.getDateString(activity)
             mCrimeSolvedImageView.visibility = if (crime.isSolved) View.VISIBLE else View.GONE
         }
 

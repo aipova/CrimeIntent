@@ -1,6 +1,7 @@
 package ru.rsppv.criminalintent.model
 
-import java.text.SimpleDateFormat
+import android.content.Context
+import android.text.format.DateFormat
 import java.util.*
 
 
@@ -13,15 +14,9 @@ class Crime(val id: UUID) {
     var isSolved: Boolean = false
     var suspect: String? = null
 
-    val dateString: String
-        get() {
-            val format = SimpleDateFormat(DATE_PATTERN)
-            return format.format(date)
-        }
+    fun getDateString(context: Context?): String? {
+        return DateFormat.getDateFormat(context).format(date)
+    }
 
     fun getPhotoFilename() = "IMG_$id.jpg"
-
-    companion object {
-        private const val DATE_PATTERN = "EEE, d MMM yyyy"
-    }
 }
