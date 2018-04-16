@@ -250,9 +250,11 @@ class CrimeFragment : Fragment(), DatePickerFragment.CrimeDateChangedListener {
             if (it.exists()) {
                 val bitmap = PictureUtils.getScaledBitmap(it.path, activity!!)
                 mPhotoView.setImageBitmap(bitmap)
+                mPhotoView.contentDescription = getString(R.string.crime_photo_image_description)
 
             } else {
                 mPhotoView.setImageDrawable(null)
+                mPhotoView.contentDescription = getString(R.string.crime_photo_no_image_description)
             }
         }
     }
